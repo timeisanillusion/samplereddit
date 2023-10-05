@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reddit Word Cloud</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.0.6/wordcloud2.min.js"></script>
+</head>
+<body>
+    <h1>Reddit Word Cloud</h1>
+
+    <form id="redditForm">
+        <label for="subreddit_name">Enter a subreddit:</label>
+        <input type="text" id="subreddit_name" name="subreddit_name" value="geegees" required>
+        <input type="submit" value="Generate Word Cloud">
+    </form>
+
+    <div id="wordCloud">
+        <!-- Word cloud will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById("redditForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const subredditName = document.getElementById("subreddit_name").value;
+            const apiUrl = `https://www.reddit.com/r/${subredditName}.json`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const textData = data.data.children.map(child => child.data.title).join(' ');
+                    generateWordCloud(textData);
+                })
+                .catch(error => console.error(error));
+        });
+
+        function generateWordCloud(textData) {
+            WordCloud(document.getElementById('wordCloud'), {
+                list: textData.split(' '),
+                gridSize: 10,
+                weightFactor: 5,
+                fontFamily: 'Arial',
+                color: 'random-light',
+                backgroundColor: 'black',
+                rotateRatio: 0.2,
+                shuffle: true
+            });
+        }
+    </script>
+</body>
+</html>
