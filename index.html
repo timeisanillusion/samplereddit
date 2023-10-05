@@ -1,7 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reddit Word Cloud GeeGees</title>
+    <title>Reddit Word Cloud</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #wordCloudContainer {
+            margin: 20px auto;
+            width: 90%;
+            height: 400px;
+            background-color: #f0f0f0;
+            position: relative;
+            text-align: center;
+        }
+
+        #wordCloudContainer span {
+            display: inline-block;
+            padding: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            transition: transform 0.3s;
+        }
+
+        #wordCloudContainer span:hover {
+            transform: scale(1.2);
+        }
+
+        .word1 { font-size: 40px; color: #ff5733; }
+        .word2 { font-size: 36px; color: #f7dc6f; }
+        .word3 { font-size: 32px; color: #90ee90; }
+        .word4 { font-size: 28px; color: #66cdaa; }
+        .word5 { font-size: 24px; color: #6495ed; }
+    </style>
     <script>
         function fetchDataAndGenerateWordCloud() {
             const subredditName = "geegees"; // Replace with your subreddit name
@@ -50,9 +88,10 @@
 
                 const sortedWords = Object.keys(wordFrequency).sort((a, b) => wordFrequency[b] - wordFrequency[a]);
                 const topWords = sortedWords.slice(0, 20); // Limit to the top 20 words
-                const wordCloudHTML = topWords.map(word => {
-                    const fontSize = wordFrequency[word] * 10; // Adjust font size as needed
-                    return `<span style="font-size: ${fontSize}px">${word}</span>`;
+                const wordCloudHTML = topWords.map((word, index) => {
+                    const fontSize = 40 - index * 2; // Decrease font size for less common words
+                    const className = `word${index + 1}`;
+                    return `<span class="${className}" style="font-size: ${fontSize}px">${word}</span>`;
                 }).join(' ');
 
                 wordCloudContainer.innerHTML = wordCloudHTML;
@@ -64,7 +103,7 @@
     </script>
 </head>
 <body>
-    <h1>Reddit Word Cloud GeeGees- Top 20 Words in Last 7 Days</h1>
+    <h1>Reddit Word Cloud</h1>
     <div id="wordCloudContainer">
         <!-- Word cloud will be displayed here -->
     </div>
