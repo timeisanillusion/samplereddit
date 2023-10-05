@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reddit Word Cloud Sample</title>
+    <title>Reddit Word Cloud GeeGees - Top 20 Words in Last 7 Days</title>
     <script>
         function fetchDataAndGenerateWordCloud() {
             const subredditName = "geegees"; // Replace with your subreddit name
-            const apiUrl = `https://www.reddit.com/r/${subredditName}.json`;
+            const apiUrl = `https://www.reddit.com/r/${subredditName}/top.json?t=week`;
 
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    const textData = data.data.children.map(child => child.data.title).join(' ');
+                    const textData = data.data.children
+                        .slice(0, 20) // Limit to the top 20 posts
+                        .map(child => child.data.title)
+                        .join(' ');
                     generateWordCloud(textData);
+                })
+                .catch(error => console.error(error));
+        }
+
+        function loadExcludedWords(callback) {
+            fetch('exclude.txt')
+                .then(response => response.text())
+                .then(text => {
+                    const excludedWords = text.split(',').map(word => word.trim().toLowerCase());
+                    callback(excludedWords);
                 })
                 .catch(error => console.error(error));
         }
@@ -20,27 +33,30 @@
             const wordCloudContainer = document.getElementById('wordCloudContainer');
             wordCloudContainer.innerHTML = ''; // Clear previous word clouds
 
-            const words = textData.split(' ');
-            const wordFrequency = {};
+            loadExcludedWords(excludedWords => {
+                const words = textData.split(' ');
+                const wordFrequency = {};
 
-            for (const word of words) {
-                const cleanedWord = word.replace(/[.,!?]/g, '').toLowerCase();
-                if (cleanedWord.length > 0) {
-                    if (wordFrequency[cleanedWord]) {
-                        wordFrequency[cleanedWord]++;
-                    } else {
-                        wordFrequency[cleanedWord] = 1;
+                for (const word of words) {
+                    const cleanedWord = word.replace(/[.,!?]/g, '').toLowerCase();
+                    if (cleanedWord.length > 0 && !excludedWords.includes(cleanedWord)) {
+                        if (wordFrequency[cleanedWord]) {
+                            wordFrequency[cleanedWord]++;
+                        } else {
+                            wordFrequency[cleanedWord] = 1;
+                        }
                     }
                 }
-            }
 
-            const sortedWords = Object.keys(wordFrequency).sort((a, b) => wordFrequency[b] - wordFrequency[a]);
-            const wordCloudHTML = sortedWords.map(word => {
-                const fontSize = wordFrequency[word] * 10; // Adjust font size as needed
-                return `<span style="font-size: ${fontSize}px">${word}</span>`;
-            }).join(' ');
+                const sortedWords = Object.keys(wordFrequency).sort((a, b) => wordFrequency[b] - wordFrequency[a]);
+                const topWords = sortedWords.slice(0, 20); // Limit to the top 20 words
+                const wordCloudHTML = topWords.map(word => {
+                    const fontSize = wordFrequency[word] * 10; // Adjust font size as needed
+                    return `<span style="font-size: ${fontSize}px">${word}</span>`;
+                }).join(' ');
 
-            wordCloudContainer.innerHTML = wordCloudHTML;
+                wordCloudContainer.innerHTML = wordCloudHTML;
+            });
         }
 
         // Initial fetch and word cloud generation when the page loads
