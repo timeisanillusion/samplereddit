@@ -12,37 +12,39 @@
     </div>
 
     <script>
-        function fetchAndUpdateWordCloud() {
-            const subredditName = "geegees"; // Replace with your subreddit name
-            const apiUrl = `https://www.reddit.com/r/${subredditName}.json`;
+        document.addEventListener("DOMContentLoaded", function() {
+            function fetchAndUpdateWordCloud() {
+                const subredditName = "geegees"; // Replace with your subreddit name
+                const apiUrl = `https://www.reddit.com/r/${subredditName}.json`;
 
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const textData = data.data.children.map(child => child.data.title).join(' ');
-                    generateWordCloud(textData);
-                })
-                .catch(error => console.error(error));
-        }
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const textData = data.data.children.map(child => child.data.title).join(' ');
+                        generateWordCloud(textData);
+                    })
+                    .catch(error => console.error(error));
+            }
 
-        function generateWordCloud(textData) {
-            WordCloud(document.getElementById('wordCloud'), {
-                list: textData.split(' '),
-                gridSize: 10,
-                weightFactor: 5,
-                fontFamily: 'Arial',
-                color: 'random-light',
-                backgroundColor: 'black',
-                rotateRatio: 0.2,
-                shuffle: true
-            });
-        }
+            function generateWordCloud(textData) {
+                WordCloud(document.getElementById('wordCloud'), {
+                    list: textData.split(' '),
+                    gridSize: 10,
+                    weightFactor: 5,
+                    fontFamily: 'Arial',
+                    color: 'random-light',
+                    backgroundColor: 'black',
+                    rotateRatio: 0.2,
+                    shuffle: true
+                });
+            }
 
-        // Fetch and update the word cloud every 5 minutes (adjust the interval as needed)
-        setInterval(fetchAndUpdateWordCloud, 300000);
-        
-        // Initial fetch and update when the page loads
-        fetchAndUpdateWordCloud();
+            // Fetch and update the word cloud every 5 minutes (adjust the interval as needed)
+            setInterval(fetchAndUpdateWordCloud, 300000);
+
+            // Initial fetch and update when the page loads
+            fetchAndUpdateWordCloud();
+        });
     </script>
 </body>
 </html>
