@@ -1,14 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Reddit Test</title>
+    <title>Reddit Word Cloud</title>
+    <script>
+        function fetchDataAndGenerateWordCloud() {
+            const subredditName = "geegees"; // Replace with your subreddit name
+            const apiUrl = `https://www.reddit.com/r/${subredditName}.json`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const textData = data.data.children.map(child => child.data.title).join(' ');
+                    generateWordCloud(textData);
+                })
+                .catch(error => console.error(error));
+        }
+
+        function generateWordCloud(textData) {
+            const wordCloudContainer = document.getElementById('wordCloudContainer');
+            wordCloudContainer.innerHTML = ''; // Clear previous word clouds
+
+            const words = textData.split(' ');
+            const wordFrequency = {};
+
+            for (const word of words) {
+                const cleanedWord = word.replace(/[.,!?]/g, '').toLowerCase();
+                if (cleanedWord.length > 0) {
+                    if (wordFrequency[cleanedWord]) {
+                        wordFrequency[cleanedWord]++;
+                    } else {
+                        wordFrequency[cleanedWord] = 1;
+                    }
+                }
+            }
+
+            const sortedWords = Object.keys(wordFrequency).sort((a, b) => wordFrequency[b] - wordFrequency[a]);
+            const wordCloudHTML = sortedWords.map(word => {
+                const fontSize = wordFrequency[word] * 10; // Adjust font size as needed
+                return `<span style="font-size: ${fontSize}px">${word}</span>`;
+            }).join(' ');
+
+            wordCloudContainer.innerHTML = wordCloudHTML;
+        }
+
+        // Initial fetch and word cloud generation when the page loads
+        fetchDataAndGenerateWordCloud();
+    </script>
 </head>
 <body>
-    <h1>Reddit Test</h1>
-
-    <button id="scrapeButton">Scrape Subreddit</button>
-    <div id="results"></div>
-
-    <script src="script.js"></script>
+    <h1>Reddit Word Cloud</h1>
+    <div id="wordCloudContainer">
+        <!-- Word cloud will be displayed here -->
+    </div>
 </body>
 </html>
