@@ -20,7 +20,7 @@
         }
 
         function loadExcludedWords(callback) {
-            fetch('exclude.txt')
+            fetch('excludes.txt')
                 .then(response => response.text())
                 .then(text => {
                     const excludedWords = text.split(',').map(word => word.trim().toLowerCase());
