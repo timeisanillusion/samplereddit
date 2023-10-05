@@ -7,21 +7,13 @@
 <body>
     <h1>Reddit Word Cloud</h1>
 
-    <form id="redditForm">
-        <label for="subreddit_name">Enter a subreddit:</label>
-        <input type="text" id="subreddit_name" name="subreddit_name" value="geegees" required>
-        <input type="submit" value="Generate Word Cloud">
-    </form>
-
     <div id="wordCloud">
         <!-- Word cloud will be displayed here -->
     </div>
 
     <script>
-        document.getElementById("redditForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            const subredditName = document.getElementById("subreddit_name").value;
+        function fetchAndUpdateWordCloud() {
+            const subredditName = "geegees"; // Replace with your subreddit name
             const apiUrl = `https://www.reddit.com/r/${subredditName}.json`;
 
             fetch(apiUrl)
@@ -31,7 +23,7 @@
                     generateWordCloud(textData);
                 })
                 .catch(error => console.error(error));
-        });
+        }
 
         function generateWordCloud(textData) {
             WordCloud(document.getElementById('wordCloud'), {
@@ -45,6 +37,12 @@
                 shuffle: true
             });
         }
+
+        // Fetch and update the word cloud every 5 minutes (adjust the interval as needed)
+        setInterval(fetchAndUpdateWordCloud, 300000);
+        
+        // Initial fetch and update when the page loads
+        fetchAndUpdateWordCloud();
     </script>
 </body>
 </html>
